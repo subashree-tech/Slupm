@@ -10,13 +10,12 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
-# Check if API key is set and initialize OpenAI client
-api_key = os.getenv("OPENAI_API_KEY")
-if not api_key:
-    raise ValueError("OPENAI_API_KEY not found. Please set it in your .env file or environment variables.")
-
-# Initialize OpenAI client (automatically reads OPENAI_API_KEY from environment)
-client = OpenAI()
+# Initialize OpenAI client function
+def get_openai_client():
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise ValueError("OPENAI_API_KEY not found. Please set it in your environment variables.")
+    return OpenAI(api_key=api_key)
 
 def build_prompt(time_of_day, meal_type, symptoms, food=None, user_question=None):
     return f"""
