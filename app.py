@@ -87,14 +87,19 @@ def explain_slump():
     # Build prompt
     prompt = build_prompt(time_of_day, meal_type, symptoms, food, user_question)
 
-    # Call OpenAI API
-    completion = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}],
-        max_tokens=200
-    )
-
-    explanation = completion.choices[0].message.content.strip()
+    try:
+        client = get_openai_client()
+        completion = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=200
+        )
+        explanation = completion.choices[0].message.content.strip()
+    except Exception as e:
+        return jsonify({
+            "error": "Failed to generate explanation",
+            "details": str(e)
+        }), 500
 
     return jsonify({
         "time_of_day": time_of_day,
